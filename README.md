@@ -1,2 +1,2 @@
 # JobQueue
-A Job Queue to fetch html from websites
+A Job Queue to fetch html from requested websites.
