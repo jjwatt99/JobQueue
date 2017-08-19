@@ -8,12 +8,12 @@ app.use(bodyParser.json());
 
 app.post('/api/start', (req, res) => {
   var id = queue.add(req.body.url);
-  res.json({job_id: id});
+  res.status(201).json({job_id: id});
 });
 
 app.get('/api/check/:id', (req, res) => {
   queue.check(req.params.id, function(data) {
-    res.json({response: data});
+    res.status(200).json({response: data});
   });
 });
 

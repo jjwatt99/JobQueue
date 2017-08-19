@@ -1,4 +1,4 @@
-var request = require('request');
+const request = require('request');
 
 module.exports = function(url, cb) {
   request(url, function(err, res, body) {

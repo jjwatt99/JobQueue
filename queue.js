@@ -5,7 +5,6 @@ const workerFarm = require('worker-farm');
 const workers = workerFarm(require.resolve('./child'));
 
 function jobQueue() {
-	var outer = this;
 	this.queue = [];
 	this.jobs = {};
 	this.busy = false;
