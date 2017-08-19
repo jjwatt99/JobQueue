@@ -7,28 +7,21 @@ const workers = workerFarm(require.resolve('./child'));
 function jobQueue() {
 	this.queue = [];
 	this.jobs = {};
-	this.busy = false;
+	this.start = 0;
 }
 
 jobQueue.prototype.add = function(url) {
-  var outer = this;
+  var self = this;
   url = 'http://' + url;
-  this.queue.push(url);
-  var id = this.getId(0);
-  this.jobs[id] = url;
-  if (this.busy === false) {
-	  var ret = 0;
-	  for (var i = 0; i < this.queue.length; i++) {
-	  	this.busy = true;
-	  	workers(this.queue[i], function(err, res, body, url) {
-	      client.set(url, JSON.stringify(body));
-	      if (ret + 1 === outer.queue.length) {
-	      	workerFarm.end(workers);
-	      	outer.busy = false;
-	      }
-	  	});
-	  }
-	}
+  self.queue.push(url);
+  var id = self.getId(0);
+  self.jobs[id] = url;
+  for (var i = self.start; i < self.queue.length; i++) {
+    self.start += 1;
+  	workers(self.queue[i], function(err, res, body, url) {
+      client.set(url, JSON.stringify(body));
+    });
+  }
   return id;
 }
 
@@ -44,7 +37,7 @@ jobQueue.prototype.getId = function(num) {
 jobQueue.prototype.check = function(id, cb) {
   var url = this.jobs[id];
   if (url === undefined) {
-  	return 'id not found';
+  	cb('id not found');
   }
   client.get(url, function(err, reply) {
   	if (err) {
